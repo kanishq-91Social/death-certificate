@@ -33,13 +33,13 @@ public class Workflow {
 
     @JsonProperty("documents")
     @Valid
-    private List<Document> documents = null;
+    private List<digit.models.coremodels.Document> documents = null;
 
     @JsonProperty("assignes")
     @Valid
     private List<String> assignes = null;
 
-    public Workflow addDocumentsItem(Document documentsItem) {
+    public Workflow addDocumentsItem(digit.models.coremodels.Document documentsItem) {
         if (this.documents == null) {
             this.documents = new ArrayList<>();
         }

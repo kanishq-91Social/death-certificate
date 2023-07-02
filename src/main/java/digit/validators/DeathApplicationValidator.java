@@ -15,14 +15,14 @@ public class DeathApplicationValidator {
     @Autowired
     private DeathRegistrationRepository repository;
 
-    public void validateDeathApplication(DeathRegistrationRequest birthRegistrationRequest) {
-        birthRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
+    public void validateDeathApplication(DeathRegistrationRequest deathRegistrationRequest) {
+        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
             if(ObjectUtils.isEmpty(application.getTenantId()))
-                throw new CustomException("EG_BT_APP_ERR", "tenantId is mandatory for creating birth registration applications");
+                throw new CustomException("EG_BT_APP_ERR", "tenantId is mandatory for creating death registration applications");
         });
     }
 
-    public DeathRegistrationApplication validateApplicationExistence(DeathRegistrationApplication birthRegistrationApplication) {
-        return repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(birthRegistrationApplication.getApplicationNumber()).build()).get(0);
+    public DeathRegistrationApplication validateApplicationExistence(DeathRegistrationApplication deathRegistrationApplication) {
+        return repository.getApplications(DeathApplicationSearchCriteria.builder().applicationNumber(deathRegistrationApplication.getRegistrationNumber()).build()).get(0);
     }
 }

@@ -34,55 +34,50 @@ public class Address   {
         @JsonProperty("tenantId")
         private String tenantId = null;
 
-        @JsonProperty("doorNo")
-        private String doorNo = null;
-
-        @JsonProperty("latitude")
-        private Double latitude = null;
-
-        @JsonProperty("longitude")
-        private Double longitude = null;
-
         @JsonProperty("buildingName")
         private String buildingName = null;
 
-        @JsonProperty("addressId")
-        private String addressId = null;
-
-        @JsonProperty("addressNumber")
-        private String addressNumber = null;
-
-        @JsonProperty("addressLine1")
-        private String addressLine1 = null;
-
-        @JsonProperty("addressLine2")
-        private String addressLine2 = null;
-
-        @JsonProperty("landmark")
-        private String landmark = null;
-
-        @JsonProperty("city")
-        private String city = null;
-
-        @JsonProperty("pincode")
-        private String pincode = null;
-
-        @JsonProperty("detail")
-        private String detail = null;
-
-        @JsonProperty("registrationId")
-        private String registrationId = null;
-
-        @JsonProperty("type")
-        private String type = null;
+        @JsonProperty("houseNumber")
+        private String houseNumber = null;
 
         @JsonProperty("streetName")
         private String streetName = null;
 
-        @JsonProperty("houseNo")
-        private String houseNo = null;
+        @JsonProperty("locality")
+        private String locality = null;
 
+        @JsonProperty("tehsil")
+        private String tehsil = null;
 
+        @JsonProperty("district")
+        private String district = null;
+
+        @JsonProperty("city")
+        private String city = null;
+
+        @JsonProperty("state")
+        private String state = null;
+
+        @JsonProperty("pinno")
+        private String pinno = null;
+
+        @JsonProperty("country")
+        private String country = null;
+
+        @JsonProperty("createdBy")
+        private String createdBy = null;
+
+        @JsonProperty("createdTime")
+        private Long createdTime = null;
+
+        @JsonProperty("lastModifiedBy")
+        private String lastModifiedBy = null;
+
+        @JsonProperty("lastModifiedTime")
+        private Long lastModifiedTime = null;
+
+        @JsonProperty("registrationId")
+        private String registrationId = null;
 
 }
 

@@ -46,7 +46,7 @@ public class MdmsUtil {
         Integer rate = 0;
         try {
             response = restTemplate.postForObject(uri.toString(), mdmsCriteriaReq, Map.class);
-            rate = JsonPath.read(response, "$.MdmsRes.VTR.RegistrationCharges.[0].amount");
+            rate = JsonPath.read(response, "$.MdmsRes.DTR.RegistrationCharges.[0].amount");
         }catch(Exception e) {
             log.error("Exception occurred while fetching category lists from mdms: ",e);
         }

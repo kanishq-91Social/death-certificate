@@ -18,40 +18,39 @@ public class DeathApplicationRowMapper implements ResultSetExtractor<List<DeathR
         Map<String,DeathRegistrationApplication> deathRegistrationApplicationMap = new LinkedHashMap<>();
 
         while (rs.next()){
-            String uuid = rs.getString("bapplicationnumber");
+            String uuid = rs.getString("dregistrationno");
             DeathRegistrationApplication deathRegistrationApplication = deathRegistrationApplicationMap.get(uuid);
 
             if(deathRegistrationApplication == null) {
 
-                Long lastModifiedTime = rs.getLong("blastModifiedTime");
+                Long lastModifiedTime = rs.getLong("dlastmodifiedtime");
                 if (rs.wasNull()) {
                     lastModifiedTime = null;
                 }
 
 
-                Applicant father = Applicant.builder().id(rs.getString("bfatherid")).build();
-                Applicant mother = Applicant.builder().id(rs.getString("bmotherid")).build();
 
                 AuditDetails auditdetails = AuditDetails.builder()
-                        .createdBy(rs.getString("bcreatedBy"))
-                        .createdTime(rs.getLong("bcreatedTime"))
-                        .lastModifiedBy(rs.getString("blastModifiedBy"))
+                        .createdBy(rs.getString("dcreatedby"))
+                        .createdTime(rs.getLong("dcreatedtime"))
+                        .lastModifiedBy(rs.getString("dlastmodifiedby"))
                         .lastModifiedTime(lastModifiedTime)
                         .build();
 
                 deathRegistrationApplication = DeathRegistrationApplication.builder()
-                        .applicationNumber(rs.getString("bapplicationnumber"))
-                        .tenantId(rs.getString("btenantid"))
-                        .id(rs.getString("bid"))
-                        .deceasedFirstName(rs.getString("bbabyfirstname"))
-                        .deceasedLastName(rs.getString("bbabylastname"))
-                        .placeOfDeath(rs.getString("placeOfDeath"))
-//                        .fatherOfApplicant(father)
-//                        .motherOfApplicant(mother)
-                        .doctorName(rs.getString("bdoctorname"))
-                        .hospitalName(rs.getString("bhospitalname"))
-                        .placeOfBirth(rs.getString("bplaceofbirth"))
-                        .timeOfBirth(rs.getInt("btimeofbirth"))
+                        .registrationNumber(rs.getString("dregistrationno"))
+                        .tenantId(rs.getString("dtenantid"))
+                        .id(rs.getString("did"))
+                        .deceasedFirstName(rs.getString("dfirstname"))
+                        .deceasedMiddleName(rs.getString("dmiddlename"))
+                        .deceasedLastName(rs.getString("dlastname"))
+                        .placeOfDeath(rs.getString("dplaceOfDeath"))
+                        .hospitalName(rs.getString("dhospitalname"))
+                        .placeOfDeath(rs.getString("dplaceofdeath"))
+                        .dateOfDeath(rs.getTimestamp("ddateofdeath").getTime())
+                        .dateOfReport(rs.getTimestamp("ddateofreport").getTime())
+                        .informantsName(rs.getString("dinformantsname"))
+                        .informantsAddress(rs.getString("dinformantsaddress"))
                         .auditDetails(auditdetails)
                         .build();
             }
@@ -68,22 +67,24 @@ public class DeathApplicationRowMapper implements ResultSetExtractor<List<DeathR
 
     private void addAddressToApplication(ResultSet rs, DeathRegistrationApplication deathRegistrationApplication) throws SQLException {
         Address address = Address.builder()
-                .id(rs.getString("id"))
+                .id(rs.getString("aid"))
                 .tenantId(rs.getString("atenantid"))
-                .doorNo(rs.getString("adoorno"))
-                .latitude(rs.getDouble("alatitude"))
-                .longitude(rs.getDouble("alongitude"))
-                .buildingName(rs.getString("buildingno"))
-                .addressId(rs.getString("aaddressid"))
-                .addressNumber(rs.getString("aaddressnumber"))
-                .type(rs.getString("atype"))
-                .addressLine1(rs.getString("aaddressline1"))
-                .addressLine2(rs.getString("aaddressline2"))
-                .landmark(rs.getString("alandmark"))
-                .streetName(rs.getString("streetname"))
+                .buildingName(rs.getString("abuildingname"))
+                .houseNumber(rs.getString("ahouseno"))
+                .streetName(rs.getString("astreetname"))
+                .locality(rs.getString("alocality"))
+                .tehsil(rs.getString("atehsil"))
+                .district(rs.getString("adistrict"))
                 .city(rs.getString("acity"))
-                .pincode(rs.getString("apincode"))
-                .detail("adetail")
+                .state(rs.getString("astate"))
+                .pinno(rs.getString("apinno"))
+                .country(rs.getString("acountry"))
+                .streetName(rs.getString("astreetname"))
+                .city(rs.getString("acity"))
+                .createdBy(rs.getString("acreatedby"))
+                .createdTime(rs.getLong("acreatedtime"))
+                .lastModifiedBy(rs.getString("alastmodifiedby"))
+                .lastModifiedTime(rs.getLong("alastmodifiedtime"))
                 .registrationId("deathdtlid")
                 .build();
 

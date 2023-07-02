@@ -1,4 +1,4 @@
-CREATE TABLE public.eg_dt_registration
+CREATE TABLE eg_dt_registration
 (
     id character varying(64)  NOT NULL,
     registrationno character varying(64)  NOT NULL,
@@ -24,14 +24,15 @@ CREATE TABLE public.eg_dt_registration
     religion character varying(100) ,
     icdcode character varying(300) ,
     age character varying(100) ,
-    CONSTRAINT eg_death_dtls_pkey PRIMARY KEY (id),
-    CONSTRAINT eg_death_dtls_ukey1 UNIQUE (registrationno, tenantid)
+    CONSTRAINT eg_death_regn_pkey PRIMARY KEY (id),
+    CONSTRAINT eg_death_regn_ukey1 UNIQUE (registrationno, tenantid)
 );
 
-CREATE TABLE public.eg_dt_address
+CREATE TABLE eg_dt_address
 (
     id character varying(64)  NOT NULL,
-    buildingno character varying(1000) ,
+    tenantid character varying(50)  NOT NULL,
+    buildingname character varying(1000) ,
     houseno character varying(1000) ,
     streetname character varying(1000) ,
     locality character varying(1000) ,
@@ -45,9 +46,10 @@ CREATE TABLE public.eg_dt_address
     createdtime bigint,
     lastmodifiedby character varying(64) ,
     lastmodifiedtime bigint,
-    deathdtlid character varying(64) ,
-    CONSTRAINT eg_death_permaddr_pkey PRIMARY KEY (id),
-    CONSTRAINT eg_death_permaddr_fkey1 FOREIGN KEY (deathdtlid)
+    deathregid character varying(64) ,
+    CONSTRAINT eg_death_addr_pkey PRIMARY KEY (id),
+    CONSTRAINT eg_death_regn_addr_ukey1 UNIQUE (tenantid),
+    CONSTRAINT eg_death_addr_fkey1 FOREIGN KEY (deathregid)
         REFERENCES public.eg_dt_registration (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE

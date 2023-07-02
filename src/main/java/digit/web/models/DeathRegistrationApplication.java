@@ -36,8 +36,8 @@ public class DeathRegistrationApplication   {
         @JsonProperty("tenantId")
         private String tenantId = null;
 
-        @JsonProperty("applicationNumber")
-        private String applicationNumber = null;
+        @JsonProperty("registrationNumber")
+        private String registrationNumber = null;
 
         @JsonProperty("deceasedFirstName")
         private String deceasedFirstName = null;
@@ -48,17 +48,29 @@ public class DeathRegistrationApplication   {
         @JsonProperty("deceasedLastName")
         private String deceasedLastName = null;
 
+        @JsonProperty("dateOfReport")
+        private Long dateOfReport = null;
+
         @JsonProperty("placeOfDeath")
         private String placeOfDeath = null;
 
-        @JsonProperty("timeOfDeath")
-        private Integer timeOfDeath = null;
+        @JsonProperty("dateOfDeath")
+        private Long dateOfDeath = null;
 
         @JsonProperty("addressOfDeceased")
         private Address addressOfDeceased = null;
 
         @JsonProperty("applicant")
         private Applicant applicant = null;
+
+        @JsonProperty("hospitalName")
+        private String hospitalName = null;
+
+        @JsonProperty("informantsName")
+        private String informantsName = null;
+
+        @JsonProperty("informantsAddress")
+        private String informantsAddress = null;
 
         @JsonProperty("auditDetails")
         private AuditDetails auditDetails = null;

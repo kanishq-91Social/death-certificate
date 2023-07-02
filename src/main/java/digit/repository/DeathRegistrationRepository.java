@@ -28,7 +28,7 @@ public class DeathRegistrationRepository {
 
     public List<DeathRegistrationApplication>getApplications(DeathApplicationSearchCriteria searchCriteria){
         List<Object> preparedStmtList = new ArrayList<>();
-        String query = queryBuilder.getBirthApplicationSearchQuery(searchCriteria, preparedStmtList);
+        String query = queryBuilder.getDeathApplicationSearchQuery(searchCriteria, preparedStmtList);
         log.info("Final query: " + query);
         return jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper);
     }

@@ -8,7 +8,6 @@ import digit.validators.DeathApplicationValidator;
 import digit.web.models.DeathApplicationSearchCriteria;
 import digit.web.models.DeathRegistrationApplication;
 import digit.web.models.DeathRegistrationRequest;
-import digit.web.models.FatherApplicant;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,41 +28,41 @@ public class DeathRegistrationService {
     @Autowired
     private DeathApplicationEnrichment enrichmentUtil;
 
-    @Autowired
-    private UserService userService;
+//    @Autowired
+//    private UserService userService;
 
     @Autowired
     private WorkflowService workflowService;
 
     @Autowired
-    private DeathRegistrationRepository birthRegistrationRepository;
+    private DeathRegistrationRepository deathRegistrationRepository;
 
     @Autowired
     private Producer producer;
 
-    public List<DeathRegistrationApplication> registerDtRequest(DeathRegistrationRequest birthRegistrationRequest) {
+    public List<DeathRegistrationApplication> registerDtRequest(DeathRegistrationRequest deathRegistrationRequest) {
         // Validate applications
-        validator.validateDeathApplication(birthRegistrationRequest);
+        validator.validateDeathApplication(deathRegistrationRequest);
 
         // Enrich applications
-        enrichmentUtil.enrichDeathApplication(birthRegistrationRequest);
+        enrichmentUtil.enrichDeathApplication(deathRegistrationRequest);
 
-        // Enrich/Upsert user in upon birth registration
-        userService.callUserService(birthRegistrationRequest);
+        // Enrich/Upsert user in upon death registration
+//        userService.callUserService(deathRegistrationRequest);
 
         // Initiate workflow for the new application
-        workflowService.updateWorkflowStatus(birthRegistrationRequest);
+        workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
         // Push the application to the topic for persister to listen and persist
-        producer.push("save-dt-application", birthRegistrationRequest);
+        producer.push("save-dt-application", deathRegistrationRequest);
 
         // Return the response back to user
-        return birthRegistrationRequest.getDeathRegistrationApplications();
+        return deathRegistrationRequest.getDeathRegistrationApplications();
     }
 
-    public List<DeathRegistrationApplication> searchDtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria birthApplicationSearchCriteria) {
+    public List<DeathRegistrationApplication> searchDtApplications(RequestInfo requestInfo, DeathApplicationSearchCriteria deathApplicationSearchCriteria) {
         // Fetch applications from database according to the given search criteria
-        List<DeathRegistrationApplication> applications = birthRegistrationRepository.getApplications(birthApplicationSearchCriteria);
+        List<DeathRegistrationApplication> applications = deathRegistrationRepository.getApplications(deathApplicationSearchCriteria);
 
         // If no applications are found matching the given criteria, return an empty list
         if(CollectionUtils.isEmpty(applications))
@@ -79,21 +78,21 @@ public class DeathRegistrationService {
         return applications;
     }
 
-    public DeathRegistrationApplication updateDtApplication(DeathRegistrationRequest birthRegistrationRequest) {
+    public DeathRegistrationApplication updateDtApplication(DeathRegistrationRequest deathRegistrationRequest) {
         // Validate whether the application that is being requested for update indeed exists
-        DeathRegistrationApplication existingApplication = validator.validateApplicationExistence(birthRegistrationRequest.getDeathRegistrationApplications().get(0));
-        existingApplication.setWorkflow(birthRegistrationRequest.getDeathRegistrationApplications().get(0).getWorkflow());
+        DeathRegistrationApplication existingApplication = validator.validateApplicationExistence(deathRegistrationRequest.getDeathRegistrationApplications().get(0));
+        existingApplication.setWorkflow(deathRegistrationRequest.getDeathRegistrationApplications().get(0).getWorkflow());
         log.info(existingApplication.toString());
-        birthRegistrationRequest.setDeathRegistrationApplications(Collections.singletonList(existingApplication));
+        deathRegistrationRequest.setDeathRegistrationApplications(Collections.singletonList(existingApplication));
 
         // Enrich application upon update
-        enrichmentUtil.enrichDeathApplicationUponUpdate(birthRegistrationRequest);
+        enrichmentUtil.enrichDeathApplicationUponUpdate(deathRegistrationRequest);
 
-        workflowService.updateWorkflowStatus(birthRegistrationRequest);
+        workflowService.updateWorkflowStatus(deathRegistrationRequest);
 
         // Just like create request, update request will be handled asynchronously by the persister
-        producer.push("update-dt-application", birthRegistrationRequest);
+        producer.push("update-dt-application", deathRegistrationRequest);
 
-        return birthRegistrationRequest.getDeathRegistrationApplications().get(0);
+        return deathRegistrationRequest.getDeathRegistrationApplications().get(0);
     }
 }

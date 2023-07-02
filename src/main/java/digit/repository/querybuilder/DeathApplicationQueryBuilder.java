@@ -10,37 +10,37 @@ import java.util.List;
 @Component
 public class DeathApplicationQueryBuilder {
 
-    private static final String BASE_BTR_QUERY = " SELECT btr.id as bid, btr.tenantid as btenantid, btr.applicationnumber as bapplicationnumber, btr.babyfirstname as bbabyfirstname, btr.babylastname as bbabylastname, btr.fatherid as bfatherid, btr.motherid as bmotherid, btr.doctorname as bdoctorname, btr.hospitalname as bhospitalname, btr.placeofbirth as bplaceofbirth, btr.timeofbirth as btimeofbirth, btr.createdby as bcreatedby, btr.lastmodifiedby as blastmodifiedby, btr.createdtime as bcreatedtime, btr.lastmodifiedtime as blastmodifiedtime, ";
+    private static final String BASE_DTR_QUERY = " SELECT dtr.id as did, dtr.tenantid as dtenantid, dtr.registrationno as dregistrationno, dtr.firstname as dfirstname, dtr.middlename as dmiddlename, dtr.lastname as dlastname, dtr.dateofreport as ddateofreport, dtr.dateofdeath as ddateofdeath, dtr.hospitalname as dhospitalname, dtr.informantsname as dinformantsname, dtr.placeofdeath as dplaceofdeath, dtr.informantsaddress as dinformantsaddress, dtr.createdby as dcreatedby, dtr.lastmodifiedby as dlastmodifiedby, dtr.createdtime as dcreatedtime, dtr.lastmodifiedtime as dlastmodifiedtime, ";
 
-    private static final String ADDRESS_SELECT_QUERY = " add.id as aid, add.tenantid as atenantid, add.doorno as adoorno, add.latitude as alatitude, add.longitude as alongitude, add.buildingname as abuildingname, add.addressid as aaddressid, add.addressnumber as aaddressnumber, add.type as atype, add.addressline1 as aaddressline1, add.addressline2 as aaddressline2, add.landmark as alandmark, add.street as astreet, add.city as acity, add.locality as alocality, add.pincode as apincode, add.detail as adetail, add.registrationid as aregistrationid ";
+    private static final String ADDRESS_SELECT_QUERY = " add.id as aid, add.tenantid as atenantid, add.buildingname as abuildingname, add.houseno as ahouseno, add.streetname as astreetname, add.locality as alocality, add.tehsil as atehsil, add.district as adistrict, add.city as acity, add.state as astate, add.pinno as pinno, add.country as acountry, add.createdby as acreatedby, add.createdtime as acreatedtime, add.lastmodifiedby as lastmodifiedby, add.lastmodifiedtime as alastmodifiedtime, add.deathregid as deathregid ";
 
-    private static final String FROM_TABLES = " FROM eg_bt_registration btr LEFT JOIN eg_bt_address add ON btr.id = add.registrationid ";
+    private static final String FROM_TABLES = " FROM eg_dt_registration dtr LEFT JOIN eg_dt_address add ON dtr.registrationno = add.deathregid ";
 
-    private final String ORDERBY_CREATEDTIME = " ORDER BY btr.createdtime DESC ";
+    private final String ORDERBY_CREATEDTIME = " ORDER BY dtr.createdtime DESC ";
 
-    public String getBirthApplicationSearchQuery(DeathApplicationSearchCriteria criteria, List<Object> preparedStmtList){
-        StringBuilder query = new StringBuilder(BASE_BTR_QUERY);
+    public String getDeathApplicationSearchQuery(DeathApplicationSearchCriteria criteria, List<Object> preparedStmtList){
+        StringBuilder query = new StringBuilder(BASE_DTR_QUERY);
         query.append(ADDRESS_SELECT_QUERY);
         query.append(FROM_TABLES);
 
         if(!ObjectUtils.isEmpty(criteria.getTenantId())){
             addClauseIfRequired(query, preparedStmtList);
-            query.append(" btr.tenantid = ? ");
+            query.append(" dtr.tenantid = ? ");
             preparedStmtList.add(criteria.getTenantId());
         }
         if(!ObjectUtils.isEmpty(criteria.getStatus())){
             addClauseIfRequired(query, preparedStmtList);
-            query.append(" btr.status = ? ");
+            query.append(" dtr.status = ? ");
             preparedStmtList.add(criteria.getStatus());
         }
         if(!CollectionUtils.isEmpty(criteria.getIds())){
             addClauseIfRequired(query, preparedStmtList);
-            query.append(" btr.id IN ( ").append(createQuery(criteria.getIds())).append(" ) ");
+            query.append(" dtr.id IN ( ").append(createQuery(criteria.getIds())).append(" ) ");
             addToPreparedStatement(preparedStmtList, criteria.getIds());
         }
         if(!ObjectUtils.isEmpty(criteria.getApplicationNumber())){
             addClauseIfRequired(query, preparedStmtList);
-            query.append(" btr.applicationnumber = ? ");
+            query.append(" dtr.applicationnumber = ? ");
             preparedStmtList.add(criteria.getApplicationNumber());
         }
 
