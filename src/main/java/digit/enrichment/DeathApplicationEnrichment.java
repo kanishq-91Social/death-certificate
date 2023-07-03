@@ -24,9 +24,34 @@ public class DeathApplicationEnrichment {
     private UserUtil userUtils;
 
     public void enrichDeathApplication(DeathRegistrationRequest deathRegistrationRequest) {
-        List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "dtr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
+//        List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "dtr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
+//        Integer index = 0;
+//        for(DeathRegistrationApplication application : deathRegistrationRequest.getDeathRegistrationApplications()){
+//            // Enrich audit details
+//            AuditDetails auditDetails = AuditDetails.builder().createdBy(deathRegistrationRequest.getRequestInfo().getUserInfo().getUuid()).createdTime(System.currentTimeMillis()).lastModifiedBy(deathRegistrationRequest.getRequestInfo().getUserInfo().getUuid()).lastModifiedTime(System.currentTimeMillis()).build();
+//            application.setAuditDetails(auditDetails);
+//
+//            // Enrich UUID
+//            application.setId(UUID.randomUUID().toString());
+//
+////            application.getFather().setId(application.getId());
+////            application.getMother().setId(application.getId());
+//
+//            // Enrich registration Id
+//            application.getAddressOfDeceased().setRegistrationId(application.getId());
+//
+//            // Enrich address UUID
+//            application.getAddressOfDeceased().setId(UUID.randomUUID().toString());
+//
+//            //Enrich application number from IDgen
+//            application.setRegistrationNumber(deathRegistrationIdList.get(index++));
+//
+//        }
+
+        //Retrieve list of IDs from IDGen service
+        List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "btr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
         Integer index = 0;
-        for(DeathRegistrationApplication application : deathRegistrationRequest.getDeathRegistrationApplications()){
+        for(DeathRegistrationApplication application : deathRegistrationRequest.getDeathRegistrationApplications()) {
             // Enrich audit details
             AuditDetails auditDetails = AuditDetails.builder().createdBy(deathRegistrationRequest.getRequestInfo().getUserInfo().getUuid()).createdTime(System.currentTimeMillis()).lastModifiedBy(deathRegistrationRequest.getRequestInfo().getUserInfo().getUuid()).lastModifiedTime(System.currentTimeMillis()).build();
             application.setAuditDetails(auditDetails);
@@ -34,18 +59,14 @@ public class DeathApplicationEnrichment {
             // Enrich UUID
             application.setId(UUID.randomUUID().toString());
 
-//            application.getFather().setId(application.getId());
-//            application.getMother().setId(application.getId());
+            // Set application number from IdGen
+            application.setRegistrationNumber(deathRegistrationIdList.get(index++));
 
             // Enrich registration Id
             application.getAddressOfDeceased().setRegistrationId(application.getId());
 
             // Enrich address UUID
             application.getAddressOfDeceased().setId(UUID.randomUUID().toString());
-
-            //Enrich application number from IDgen
-            application.setRegistrationNumber(deathRegistrationIdList.get(index++));
-
         }
     }
 
