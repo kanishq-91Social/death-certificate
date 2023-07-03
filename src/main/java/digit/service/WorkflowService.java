@@ -2,11 +2,8 @@ package digit.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import digit.config.DTRConfiguration;
-import digit.models.coremodels.*;
 import digit.repository.ServiceRequestRepository;
 import digit.web.models.*;
-import digit.web.models.RequestInfoWrapper;
-import digit.web.models.Workflow;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
@@ -32,10 +29,10 @@ public class WorkflowService {
     @Autowired
     private DTRConfiguration config;
 
-    public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
-        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
-            ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
+    public void updateWorkflowStatus(DeathRegistrationRequest birthRegistrationRequest) {
+        birthRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
+            ProcessInstance processInstance = getProcessInstanceForBTR(application, birthRegistrationRequest.getRequestInfo());
+            ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(birthRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
             callWorkFlow(workflowRequest);
         });
     }
@@ -49,23 +46,23 @@ public class WorkflowService {
         return response.getProcessInstances().get(0).getState();
     }
 
-    private ProcessInstance getProcessInstanceForDTR(DeathRegistrationApplication application, RequestInfo requestInfo) {
+    private ProcessInstance getProcessInstanceForBTR(DeathRegistrationApplication application, RequestInfo requestInfo) {
         Workflow workflow = application.getWorkflow();
 
         ProcessInstance processInstance = new ProcessInstance();
         processInstance.setBusinessId(application.getRegistrationNumber());
         processInstance.setAction(workflow.getAction());
-        processInstance.setModuleName("death-services");
+        processInstance.setModuleName("birth-services");
         processInstance.setTenantId(application.getTenantId());
-        processInstance.setBusinessService("DTR");
+        processInstance.setBusinessService("BTR");
         processInstance.setDocuments(workflow.getDocuments());
         processInstance.setComment(workflow.getComments());
 
         if(!CollectionUtils.isEmpty(workflow.getAssignes())){
-            List<org.egov.common.contract.request.User> users = new ArrayList<>();
+            List<User> users = new ArrayList<>();
 
             workflow.getAssignes().forEach(uuid -> {
-                org.egov.common.contract.request.User user = new org.egov.common.contract.request.User();
+                digit.web.models.User user = new digit.web.models.User();
                 user.setUuid(uuid);
                 users.add(user);
             });
@@ -77,9 +74,31 @@ public class WorkflowService {
 
     }
 
+    public ProcessInstance getCurrentWorkflow(RequestInfo requestInfo, String tenantId, String businessId) {
+
+        RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
+
+        StringBuilder url = getSearchURLWithParams(tenantId, businessId);
+
+        Object res = repository.fetchResult(url, requestInfoWrapper);
+        ProcessInstanceResponse response = null;
+
+        try{
+            response = mapper.convertValue(res, ProcessInstanceResponse.class);
+        }
+        catch (Exception e){
+            throw new CustomException("PARSING_ERROR","Failed to parse workflow search response");
+        }
+
+        if(response!=null && !CollectionUtils.isEmpty(response.getProcessInstances()) && response.getProcessInstances().get(0)!=null)
+            return response.getProcessInstances().get(0);
+
+        return null;
+    }
+
     private BusinessService getBusinessService(DeathRegistrationApplication application, RequestInfo requestInfo) {
         String tenantId = application.getTenantId();
-        StringBuilder url = getSearchURLWithParams(tenantId, "DTR");
+        StringBuilder url = getSearchURLWithParams(tenantId, "BTR");
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
         Object result = repository.fetchResult(url, requestInfoWrapper);
         BusinessServiceResponse response = null;
@@ -90,7 +109,7 @@ public class WorkflowService {
         }
 
         if (CollectionUtils.isEmpty(response.getBusinessServices()))
-            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + "DTR" + " is not found");
+            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + "BTR" + " is not found");
 
         return response.getBusinessServices().get(0);
     }
@@ -111,10 +130,10 @@ public class WorkflowService {
         DeathRegistrationApplication application = updateRequest.getDeathRegistrationApplications().get(0);
 
         ProcessInstance process = ProcessInstance.builder()
-                .businessService("DTR")
+                .businessService("BTR")
                 .businessId(application.getRegistrationNumber())
-                .comment("Payment for death registration processed")
-                .moduleName("death-services")
+                .comment("Payment for birth registration processed")
+                .moduleName("birth-services")
                 .tenantId(application.getTenantId())
                 .action("PAY")
                 .build();
@@ -125,38 +144,4 @@ public class WorkflowService {
                 .build();
 
     }
-
-    private StringBuilder getWorkflowSearchURLWithParams(String tenantId, String businessId) {
-
-        StringBuilder url = new StringBuilder(config.getWfHost());
-        url.append(config.getWfProcessInstanceSearchPath());
-        url.append("?tenantId=");
-        url.append(tenantId);
-        url.append("&businessIds=");
-        url.append(businessId);
-        return url;
-    }
-
-    public ProcessInstance getCurrentWorkflow(RequestInfo requestInfo, String tenantId, String businessId) {
-
-        RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
-
-        StringBuilder url = getWorkflowSearchURLWithParams(tenantId, businessId);
-
-        Object res = repository.fetchResult(url, requestInfoWrapper);
-        ProcessInstanceResponse response = null;
-
-        try{
-            response = mapper.convertValue(res, ProcessInstanceResponse.class);
-        }
-        catch (Exception e){
-            throw new CustomException("PARSING_ERROR","Failed to parse workflow search response");
-        }
-
-        if(response!=null && !CollectionUtils.isEmpty(response.getProcessInstances()) && response.getProcessInstances().get(0)!=null)
-            return response.getProcessInstances().get(0);
-
-        return null;
-    }
-
 }

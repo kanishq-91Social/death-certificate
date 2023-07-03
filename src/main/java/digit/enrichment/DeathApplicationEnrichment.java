@@ -76,7 +76,7 @@ public class DeathApplicationEnrichment {
     }
 
     public void enrichMotherApplicantOnSearch(DeathRegistrationApplication application) {
-//        UserDetailResponse motherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getFather().getId(),null);
+//        UserDetailResponse motherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getMother().getId(),null);
 //        User motherUser = motherUserResponse.getUser().get(0);
 //        log.info(motherUser.toString());
 //        MotherApplicant motherApplicant = MotherApplicant.builder().aadhaarNumber(motherUser.getAadhaarNumber())
@@ -94,4 +94,5 @@ public class DeathApplicationEnrichment {
 //                .roles(motherUser.getRoles()).build();
 //        application.setMother(motherApplicant);
     }
+
 }

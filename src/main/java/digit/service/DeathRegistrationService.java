@@ -28,8 +28,8 @@ public class DeathRegistrationService {
     @Autowired
     private DeathApplicationEnrichment enrichmentUtil;
 
-//    @Autowired
-//    private UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private WorkflowService workflowService;
@@ -48,7 +48,7 @@ public class DeathRegistrationService {
         enrichmentUtil.enrichDeathApplication(deathRegistrationRequest);
 
         // Enrich/Upsert user in upon death registration
-//        userService.callUserService(deathRegistrationRequest);
+        userService.callUserService(deathRegistrationRequest);
 
         // Initiate workflow for the new application
         workflowService.updateWorkflowStatus(deathRegistrationRequest);

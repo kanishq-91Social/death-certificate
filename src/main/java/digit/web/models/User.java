@@ -39,6 +39,9 @@ public class User   {
         @JsonProperty("uuid")
         private String uuid = null;
 
+        @JsonProperty("name")
+        private String name = null;
+
         @JsonProperty("userName")
         private String userName = null;
 
