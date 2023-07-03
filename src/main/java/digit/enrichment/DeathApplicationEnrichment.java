@@ -49,7 +49,7 @@ public class DeathApplicationEnrichment {
 //        }
 
         //Retrieve list of IDs from IDGen service
-        List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "btr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
+        List<String> deathRegistrationIdList = idgenUtil.getIdList(deathRegistrationRequest.getRequestInfo(), deathRegistrationRequest.getDeathRegistrationApplications().get(0).getTenantId(), "dtr.registrationid", "", deathRegistrationRequest.getDeathRegistrationApplications().size());
         Integer index = 0;
         for(DeathRegistrationApplication application : deathRegistrationRequest.getDeathRegistrationApplications()) {
             // Enrich audit details
