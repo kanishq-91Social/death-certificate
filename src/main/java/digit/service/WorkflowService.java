@@ -29,10 +29,10 @@ public class WorkflowService {
     @Autowired
     private DTRConfiguration config;
 
-    public void updateWorkflowStatus(DeathRegistrationRequest birthRegistrationRequest) {
-        birthRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
-            ProcessInstance processInstance = getProcessInstanceForBTR(application, birthRegistrationRequest.getRequestInfo());
-            ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(birthRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
+    public void updateWorkflowStatus(DeathRegistrationRequest deathRegistrationRequest) {
+        deathRegistrationRequest.getDeathRegistrationApplications().forEach(application -> {
+            ProcessInstance processInstance = getProcessInstanceForDTR(application, deathRegistrationRequest.getRequestInfo());
+            ProcessInstanceRequest workflowRequest = new ProcessInstanceRequest(deathRegistrationRequest.getRequestInfo(), Collections.singletonList(processInstance));
             callWorkFlow(workflowRequest);
         });
     }
@@ -46,15 +46,15 @@ public class WorkflowService {
         return response.getProcessInstances().get(0).getState();
     }
 
-    private ProcessInstance getProcessInstanceForBTR(DeathRegistrationApplication application, RequestInfo requestInfo) {
+    private ProcessInstance getProcessInstanceForDTR(DeathRegistrationApplication application, RequestInfo requestInfo) {
         Workflow workflow = application.getWorkflow();
 
         ProcessInstance processInstance = new ProcessInstance();
         processInstance.setBusinessId(application.getRegistrationNumber());
         processInstance.setAction(workflow.getAction());
-        processInstance.setModuleName("birth-services");
+        processInstance.setModuleName("death-services");
         processInstance.setTenantId(application.getTenantId());
-        processInstance.setBusinessService("BTR");
+        processInstance.setBusinessService("DTR");
         processInstance.setDocuments(workflow.getDocuments());
         processInstance.setComment(workflow.getComments());
 
@@ -98,7 +98,7 @@ public class WorkflowService {
 
     private BusinessService getBusinessService(DeathRegistrationApplication application, RequestInfo requestInfo) {
         String tenantId = application.getTenantId();
-        StringBuilder url = getSearchURLWithParams(tenantId, "BTR");
+        StringBuilder url = getSearchURLWithParams(tenantId, "DTR");
         RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(requestInfo).build();
         Object result = repository.fetchResult(url, requestInfoWrapper);
         BusinessServiceResponse response = null;
@@ -109,7 +109,7 @@ public class WorkflowService {
         }
 
         if (CollectionUtils.isEmpty(response.getBusinessServices()))
-            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + "BTR" + " is not found");
+            throw new CustomException("BUSINESSSERVICE_NOT_FOUND", "The businessService " + "DTR" + " is not found");
 
         return response.getBusinessServices().get(0);
     }
@@ -130,10 +130,10 @@ public class WorkflowService {
         DeathRegistrationApplication application = updateRequest.getDeathRegistrationApplications().get(0);
 
         ProcessInstance process = ProcessInstance.builder()
-                .businessService("BTR")
+                .businessService("DTR")
                 .businessId(application.getRegistrationNumber())
-                .comment("Payment for birth registration processed")
-                .moduleName("birth-services")
+                .comment("Payment for death registration processed")
+                .moduleName("death-services")
                 .tenantId(application.getTenantId())
                 .action("PAY")
                 .build();
